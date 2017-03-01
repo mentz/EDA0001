@@ -1,0 +1,6 @@
+Hoje tivemos um resumão bem grande, expandido e explicado sobre o plano de ensino.
+
+LIFO = Last In First Out
+Pilha é LIFO
+FIFO = First In First Out
+Fila é FIFO
