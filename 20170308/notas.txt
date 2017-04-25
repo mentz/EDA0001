@@ -1,0 +1,16 @@
+complexo.h
+complexoPriv.h
+complexo.c
+
+Esses três fazem o TDA.
+
+Como foi feito o encapsulamento?
+
+typedef struct NumComplexo Complexo;
+
+Mas como isso funciona? Não sei, mas funciona.
+
+NumComplexo x;
+x->a; //funciona
+Complexo p;
+p->a; //naofunciona

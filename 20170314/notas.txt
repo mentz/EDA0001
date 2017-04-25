@@ -1,0 +1,13 @@
+Pilha (pensa num poço):
+	Formato LIFO (Last In First Out)
+	Vamos implementar pilha estática (tamanho máximo fixo).
+	Usaremos um descritor (descreve o que existe na estrutura de dados).
+
+Exemplo de Pilha:
+	pos  0| 1| 2| 3| 4| 5| 6
+	   _10| 5| 3|  |  |  |
+Informações (descritor):
+	tamVet = 7 (tamanho máximo do vetor ou pilha)
+	topo = 2 (se for -1 significa que está vazia)
+	tamInfo = 1 (tamanho da informação guardada, ex.: int = 1)
+

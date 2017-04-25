@@ -1,0 +1,17 @@
+Tipos de Pilha
+	PE (Pilha Estática)
+		Pilha de tamanho máximo estático predeterminado.
+		/-----------------\        /-vetor de tamInfo bytes por elemento-\
+		|void* dados  -------------> vet[0] = 10   |
+		|int tamVet       |        | vet[1] = 12   |
+		|int tamInfo      |        | vet[2] = 4    |
+		| int topo = 2    |        | vet[3] = /*lixo*/
+		\-----------------/        \---------------/
+	PDSE (Pilha Dinâmica Simplesmente Encadeada)
+		Pilha de tamanho máximo não predeterminado com elementos simplesmente encadeados.
+		Descritor: void* topo; int tamInfo;
+		Elemento: void* dado; void* proximo;
+	PDDE (Pilha Dinâmica Duplamente Encadeada)
+		Pilha de tamanho máximo não predeterminado com elementos duplamente encadeados.
+		Descritor: void* topo; int tamInfo;
+		Elemento: void* anterior; void* dado; void* proximo;

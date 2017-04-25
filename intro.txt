@@ -3,3 +3,9 @@ Professor: Gilmário Santos
 gilmario.santos@udesc.br
 Ramal 17946
 Usamos Moodle2
+
+Monitoria:
+Segunda: 10h10 - 11h50 F108
+Terça: 15h20 - 17h00 F203
+Quarta: 17h00 - 20h40 F307
+Sexta: 13h30 - 17h00 F307

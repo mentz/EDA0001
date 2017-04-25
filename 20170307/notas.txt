@@ -1,0 +1,40 @@
+TDA = Tipos de Dados Abstratos = Tipos Abstratos de Dados = TAD = Abstract Data Type = ADT
+
+TDAs usam de abstração e encapsulamento.
+Por meio de uma interface publicam os serviços que realizam.
+Faz parte do conceito de encapsulamento e modularização.
+
+TDA possuem geralmente serviços classificados como:
+	Operações construtoras: instanciam (criam na memória principal) um novo TDA e retornam uma referência (endereço) para acesso.
+	Operações de acesso: retornam informações sobre sem modificar o estado interno do TDA.
+	Operações de manipulação: alteram o estado interno do TDA.
+	Operações destrutoras: liberam todo o espaço de memória alocado para uso do TDA.
+
+Vamos sempre documentar:
+	Pré-condições: são aquelas assumidas pelo TDA como verdadeiras, é responsbilidade do usuário (cliente do TDA) estabelecer estas condições antes da chamada à respectiva operação.
+	Pós-condições: descrevem os efeitos da chamada a uma determinada operação.
+
+As operações (ou serviços) devem garantir:
+	Atomicidade: A operação só é considerada sucesso se e somente se todas as ações que a constituem tiverem sido executadas com sucesso. O fracasso leva ao desfazer das ações tomadas até então, recuperando o TDA ao seu estado anterior a chamada da operação.
+	Consistência: A execução da operação deve levar o TDA de um estado consistente a um outro estado consistente.
+
+Vamos implementar como TDAs:
+	Pilha
+	Fila
+	Lista
+	Árvore
+	etc
+
+	Como: estática e dinâmica;
+		Estática: tamanho máximo é alocado na criação do TDA.
+		Dinâmico: Não há um vetor construído para conter o TDA.
+			O TDA se desenvolve em função de inserções (alocando memória) ou remoções (liberando memória).
+			Cada elemento inserido tem que ser encadeado na estrutura por meio de apontadores.
+
+	PE: pilha estática;
+	PDSE: Pilha Dinâmica Simplesmente Encadeada;
+	PESE: Pilha Estática Simplesmente Encadeada;
+	e por aí vai... não é muito criativo mas funciona...
+
+
+EU ADORO RETISCÊNCIAS...
