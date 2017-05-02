@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "fec.h"
+#include "fdse.h"
 
 int main(void)
 {
-    FEC *p = NULL;
-    cria(&p, 7, sizeof(int));
+    FDSE *p = NULL;
+    cria(&p, sizeof(int));
     int *n = malloc(sizeof(int)), *c = malloc(sizeof(int)), *f = malloc(sizeof(int));
     *n = 1;
     enfileira(p, n);
