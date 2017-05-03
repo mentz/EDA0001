@@ -92,7 +92,6 @@ int insere(FDP* p, void* novo)
                 do
                 {
                     result = (*(p->compara))(tmp->dados, new->dados);
-                    printf("%2d", result);
                     if (result == -1)
                     {
                         if (tmp->defronte == NULL) //Caso seja o de maior prioridade
@@ -165,7 +164,7 @@ void printLista(FDP* p)
     pNoFDP tmp;
     tmp = p->cauda;
     int d;
-    printf("\t\tVetor: ");
+    printf("Vetor: ");
     while (tmp != NULL)
     {
         memcpy((void*)&d, tmp->dados, sizeof(int));
