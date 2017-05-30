@@ -8,8 +8,6 @@
 #define SUCESSO 1
 #define FRACASSO 0
 
-#define swap(X, Y) (X ^= Y ^= X ^= Y)
-
 typedef struct noLDSE
 {
     struct noLDSE* prox;
