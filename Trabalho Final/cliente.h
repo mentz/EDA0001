@@ -5,8 +5,7 @@ typedef struct {
 	int idade;
 } info;
 
-unsigned short comparaCamposChaves1(void *pInfo1, void *pInfo2);
-unsigned short comparaCamposChaves2(void *chave, void *pInfo);
+unsigned short comparaChaves(void *pInfo1, void *pInfo2);
 void exibeChave(void *pInfo);
 void flush(FILE *in);
 void menu(pABB p);
