@@ -7,19 +7,33 @@ int main(void)
 	FILE * arquivo = NULL;
 
 	// TODO: Fazer abrir árvore do arquivo, fazer salvar quando fechar
-	/*
-	if (!(tree = fopen("abb_head.bin", "rb")))
+
+	if (!(tree = fopen("abb_index.bin", "rb")))
 	{
 		puts("Erro ao abrir o arquivo. Criando nova árvore.");
 		if (criaABB(&pT, sizeof(info)) == SUCESSO)
 		{
-
+			info * pInfo = NULL;
+			rewind(arquivo);
+			int i = 0;
+			while (1)
+			{
+				pInfo = malloc(sizeof(info));
+				pInfo->linha = i;
+				fseek(arquivo, sizeof(char) * 60 * i, SEEK_SET);
+				if (fscanf(arquivo, "%d", &pInfo->matricula) == EOF)
+					break;
+				if (insereABB(pT, pInfo, comparaChaves) == SUCESSO)
+				{
+					printf("%d -> %d\n", pInfo->linha, pInfo->matricula);
+				}
+				i++;
+			}
 		}
 	}
 	else {
 
 	}
-	*/
 
 	if (!(arquivo = fopen("arq.txt", "r")))
 	{
@@ -33,31 +47,47 @@ int main(void)
 		return 1;
 	}
 
-	info * pInfo = NULL;
-	rewind(arquivo);
-	int i = 0;
-	while (1)
-	{
-		pInfo = malloc(sizeof(info));
-		pInfo->linha = i;
-		fseek(arquivo, sizeof(char) * 60 * i, SEEK_SET);
-		if (fscanf(arquivo, "%d", &pInfo->matricula) == EOF)
-			break;
-		if (insereABB(pT, pInfo, comparaChaves) == SUCESSO)
-		{
-			printf("%d -> %d\n", pInfo->linha, pInfo->matricula);
-		}
-		i++;
-	}
+	
 
 	int op = -1;
 	// menu
 	while (op != 0)
 	{
 		puts("\n---------------------------");
-		puts("Escolha uma opção:");
 		puts("1 - Pesquisar por matrícula");
 		puts("2 - Adicionar um cadastro");
+		puts("3 - Remover um cadastro");
+		puts("0 - SAIR");
+		printf("Escolha uma opção: ");
+		
+		scanf("%d", &op);
+		switch (op)
+		{
+			case 1:
+				puts("Qual a matrícula que deseja procurar?");
+				scanf("%d", &(pInfo->matricula));
+				if (!buscaABB(pT, pInfo, pInfo, comparaChaves))
+					puts("Chave não encontrada");
+				else
+					printf("Chave se encontra na linha %d\n", pInfo->linha + 1);
+				break;
+
+			case 2:
+
+				break;
+
+			case 3:
+				puts("Qual a matrícula que deseja remover?");
+				scanf("%d", &(pInfo->matricula));
+				if (!buscaABB(pT, pInfo, pInfo, comparaChaves))
+					puts("Matrícula não encontrada");
+				else
+					removerMatricula(pT, pInfo, arquivo);
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	/*
@@ -86,7 +116,7 @@ int main(void)
 	}
 	*/
 
-	fclose(tree);
+	//fclose(tree);
 	fclose(arquivo);
 
 	return 0;

@@ -29,10 +29,10 @@ void reiniciaABB(pABB p)
 int buscaABB(pABB pa, void *destino, void *chaveDeBusca, unsigned short(* cmp)(void *p1, void *p2))
 {
 	pNoABB aux;
-	unsigned int ret= FRACASSO;
+	int ret = FRACASSO;
 	aux = pa->raiz;
-	while( aux != NULL && (*cmp)(chaveDeBusca,aux->dados) != '=')
-		aux = (*cmp)(chaveDeBusca,aux->dados)== '<' ? aux->esq : aux->dir;
+	while (aux != NULL && (*cmp)(chaveDeBusca, aux->dados) != '=')
+		aux = (*cmp)(chaveDeBusca, aux->dados)== '<' ? aux->esq : aux->dir;
 	if (aux != NULL)
 	{
 		memcpy(destino, aux->dados, pa->tamInfo);
@@ -42,17 +42,20 @@ int buscaABB(pABB pa, void *destino, void *chaveDeBusca, unsigned short(* cmp)(v
 }
 
 int insereABB(pABB pa, void *novoReg, unsigned short (* cmp)(void *p1, void *p2))
-{  	pNoABB p, q, novoNoABB;
+{
+	pNoABB p, q, novoNoABB;
 
-		p = q = pa->raiz;
- 	while( p != NULL )
-	  	{  if ( (*cmp)(novoReg,p->dados) == '=')
-			   	return FRACASSO;  /* registro já inserido previamente */
-			else
-	 		{   	q = p;
+	p = q = pa->raiz;
+	while( p != NULL )
+	{
+		if ( (*cmp)(novoReg,p->dados) == '=')
+			return FRACASSO;  /* registro já inserido previamente */
+		else
+		{
+			q = p;
 			p = ((*cmp)(novoReg,p->dados)== '<') ? p->esq : p->dir;
-				}
 		}
+	}
 
 
   	if ((novoNoABB = (pNoABB) malloc (sizeof(NoABB))) != NULL)
