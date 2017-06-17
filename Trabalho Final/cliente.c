@@ -50,6 +50,16 @@ int main(void)
 		i++;
 	}
 
+	int op = -1;
+	// menu
+	while (op != 0)
+	{
+		puts("\n---------------------------");
+		puts("Escolha uma opção:");
+		puts("1 - Pesquisar por matrícula");
+		puts("2 - Adicionar um cadastro");
+	}
+
 	/*
 	unsigned int opc=1,i=0;
 	if (criaABB(&p, sizeof(info)) == SUCESSO)
