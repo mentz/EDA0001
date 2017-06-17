@@ -49,8 +49,9 @@ int main(int argc, char * argv[])
 		printf("Escolha uma opção: ");
 		
 		scanf("%d", &op);
+		printf("\n");
 		int i = 1, confirmacao = 0;
-		char linha[60];
+		char linha[60], ch;
 		switch (op)
 		{
 			case 1:
@@ -59,7 +60,11 @@ int main(int argc, char * argv[])
 				if (!buscaABB(pT, pInfo, pInfo, comparaChaves))
 					puts("Matrícula não encontrada.");
 				else
-					printf("Matrícula se encontra na linha %d\n", pInfo->linha + 1);
+				{
+					fseek(arquivo, sizeof(char) * 60 * pInfo->linha, SEEK_SET);
+					fscanf(arquivo, "%59[^\n]", linha);
+					printf("Cadastro na linha %d:\n%s\n", pInfo->linha+1, linha);
+				}
 				break;
 
 			case 2:
@@ -67,9 +72,17 @@ int main(int argc, char * argv[])
 				do {
 					pInfo->matricula = i++;
 				} while (buscaABB(pT, pInfo, pInfo, comparaChaves) == SUCESSO);
-				fseek(arquivo, sizeof(char) * 60, SEEK_END);
+				rewind(arquivo);
+				i = 0;
+				// Contagem de linhas para saber onde adicionar o último registro.
+				while (!feof(arquivo))
+				{
+					ch = getc(arquivo);
+					if (ch == '\n')
+						i++;
+				}
 				fscanf(arquivo, "%d", &i);
-				printf("%d última matricula\n", i);
+				pInfo->linha = i;
 				printf("Nova matrícula: %d\n", pInfo->matricula);
 				if (inserirMatricula(pT, pInfo, &arquivo) != SUCESSO)
 				{
@@ -153,8 +166,11 @@ void flush(FILE *in)
 	} while(c != '\n' && c != EOF);
 }
 
+/////////////////////////////////////////////////////////
 int inserirMatricula(pABB pT, info * pInfo, FILE ** arquivo)
 {
+
+	// Reabrir arquivo no modo append.
 	fclose(*arquivo);
 	if (!(*arquivo = fopen("arq.txt", "a")))
 	{
@@ -162,10 +178,32 @@ int inserirMatricula(pABB pT, info * pInfo, FILE ** arquivo)
 		return FRACASSO;
 	}
 
-	int matricula = pInfo->matricula;
+	int matricula = pInfo->matricula, telefone, idade;
+	char nome[15], departamento[15];
+	double salario;
 
-	printf("Digite o nome: ");
+	printf("Digite o nome (até 15 caracteres sem espaços): "); scanf("%15s", nome);
+	printf("Digite o telefone (6 dígitos): "); scanf("%d", &telefone);
+	printf("Digite o salário: "); scanf("%lf", &salario);
+	printf("Digite a idade (entre 10 e 100 anos, inclusive): "); scanf("%d", &idade);
+	printf("Digite o departamento (até 15 caracteres sem espaços): "); scanf("%15s", departamento);
 
+	char cadastro[61];
+	sprintf(cadastro, "%d %s %d %0.2f %d %s #", matricula, nome, telefone, salario, idade, departamento);
+	printf("\nCadastro inserido:\n%-59s\n", cadastro);
+	fseek(*arquivo, sizeof(char) * 60 * pInfo->linha, SEEK_SET);
+	fprintf(*arquivo, "%-59s\n", cadastro);
+
+	// Insere na ABB índice.
+	insereABB(pT, pInfo, comparaChaves);
+
+	// Devolver o ponteiro de arquivo da forma que foi recebido.
+	fclose(*arquivo);
+	if (!(*arquivo = fopen("arq.txt", "r")))
+	{
+		puts("inserirMatricula: Erro ao reabrir \"arq.txt\" em modo leitura.");
+		return FRACASSO;
+	}
 
 	return SUCESSO;
 }
@@ -175,20 +213,22 @@ int constroiArvoreIndices(pABB pT, FILE ** arquivo)
 {
 	info * pInfo = malloc(sizeof(info));
 	rewind(*arquivo);
-	int i = 0;
-	while (1)
+	int i = 0, r;
+	while (!feof(*arquivo)) 
 	{
 		pInfo->linha = i;
 		fseek(*arquivo, sizeof(char) * 60 * i, SEEK_SET);
-		if (fscanf(*arquivo, "%d", &pInfo->matricula) == EOF)
+		r = fscanf(*arquivo, "%d", &pInfo->matricula);
+		// Verificar se acabo de ler o final do arquivo e sair se for o caso.
+		if (r == EOF)
 			break;
 		if (insereABB(pT, pInfo, comparaChaves) != SUCESSO)
 		{
-			puts("constroiArvoreIndices(pABB pT, FILE ** arquivo): Erro ao inserir na ABB.");
+			puts("constroiArvoreIndices: Erro ao inserir na ABB.");
 			return FRACASSO;
 		}
 		i++;
-	}
+	} 
 
 	return SUCESSO;
 }
@@ -200,7 +240,7 @@ int removerMatricula(ppABB ppT, info * pInfo, FILE ** arquivo)
 	FILE * tmp = NULL;
 	if (!(tmp = fopen("tmp.dat", "w")))
 	{
-		puts("removerMatricula(info *pInfo, FILE **arquivo): Erro ao criar arquivo auxiliar.");
+		puts("removerMatricula: Erro ao criar arquivo auxiliar.");
 		return FRACASSO;
 	}
 
