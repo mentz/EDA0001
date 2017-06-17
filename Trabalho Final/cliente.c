@@ -5,9 +5,12 @@ int main(void)
 	ABB * pT = NULL;
 	FILE * arvere = NULL;
 	FILE * entradas = NULL;
+	
+	// TODO: Fazer abrir √°rvore do arquivo, fazer salvar quando fechar
+	/*
 	if (!(arvere = fopen("abb_head.bin", "r+")))
 	{
-		puts("Erro ao abrir o arquivo. Criando nova ·rvore.");
+		puts("Erro ao abrir o arquivo. Criando nova √°rvore.");
 		if (criaABB(&pT, sizeof(info)) == SUCESSO)
 		{
 
@@ -16,6 +19,10 @@ int main(void)
 	else {
 
 	}
+	*/
+
+	
+	
 	/*
 	unsigned int opc=1,i=0;
 	if (criaABB(&p, sizeof(info)) == SUCESSO)
@@ -31,7 +38,7 @@ int main(void)
 			}
 			else
 			{
-				puts(">>> Fracasso na inserÁ„o");
+				puts(">>> Fracasso na inser√ß√£o");
 				return;
 			}
 		} while(vet[i].idade>0);
@@ -46,8 +53,8 @@ int main(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-/*dados os endereÁos de duas instancias de registros, h· a comparaÁ„o dos
-respectivos campos chaves e o retorno da relaÁ„o entre eles: >, < ou = */
+/*dados os endere√ßos de duas instancias de registros, h√° a compara√ß√£o dos
+respectivos campos chaves e o retorno da rela√ß√£o entre eles: >, < ou = */
 unsigned short comparaChave(void *pInfo1, void *pInfo2)
 {
 	tipoChave a1 = ((info *)pInfo1)->campoChave, a2 = ((info *)pInfo2)->campoChave;
@@ -103,9 +110,9 @@ void menu(pABB p)
 				flush(stdin);
 			  	scanf("%i", &(aux.campoChave));
 					if (insereABB(p,&aux,comparaCamposChaves1)==SUCESSO)
-			  		puts(">>> Sucesso na inserÁ„o");
+			  		puts(">>> Sucesso na inser√ß√£o");
 			  	else
-						puts(">>> Fracasso na inserÁ„o");
+						puts(">>> Fracasso na inser√ß√£o");
 			  	break;
 			case 2:
 					printf("entre com matricula: ");
