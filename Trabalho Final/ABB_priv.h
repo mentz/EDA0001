@@ -18,4 +18,3 @@ void percorreEmPreOrdem(pNoABB pa, void (* processa)(void *p));
 void percorreEmPosOrdem(pNoABB pa, void (* processa)(void *p));
 void percorreEmOrdem(pNoABB pa, void (* processa)(void *p));
 int calcNumFolhas(pNoABB p);
-
