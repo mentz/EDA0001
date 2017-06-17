@@ -2,13 +2,13 @@
 
 int main(void)
 {
-	ABB * pT = NULL;
-	FILE * arvere = NULL;
-	FILE * entradas = NULL;
-	
+	pABB pT = NULL;
+	//FILE * tree = NULL;
+	FILE * arquivo = NULL;
+
 	// TODO: Fazer abrir árvore do arquivo, fazer salvar quando fechar
 	/*
-	if (!(arvere = fopen("abb_head.bin", "r+")))
+	if (!(tree = fopen("abb_head.bin", "rb")))
 	{
 		puts("Erro ao abrir o arquivo. Criando nova árvore.");
 		if (criaABB(&pT, sizeof(info)) == SUCESSO)
@@ -21,8 +21,35 @@ int main(void)
 	}
 	*/
 
-	
-	
+	if (!(arquivo = fopen("arq.txt", "r")))
+	{
+		puts("Erro na leitura do arquivo \"arq.txt\".");
+		return 1;
+	}
+
+	if (criaABB(&pT, sizeof(info)) == FRACASSO)
+	{
+		puts("Erro na criação da árvore binária.");
+		return 1;
+	}
+
+	info * pInfo = NULL;
+	rewind(arquivo);
+	int i = 0;
+	while (1)
+	{
+		pInfo = malloc(sizeof(info));
+		pInfo->linha = i;
+		fseek(arquivo, sizeof(char) * 60 * i, SEEK_SET);
+		if (fscanf(arquivo, "%d", &pInfo->matricula) == EOF)
+			break;
+		if (insereABB(pT, pInfo, comparaChaves) == SUCESSO)
+		{
+			printf("%d -> %d\n", pInfo->linha, pInfo->matricula);
+		}
+		i++;
+	}
+
 	/*
 	unsigned int opc=1,i=0;
 	if (criaABB(&p, sizeof(info)) == SUCESSO)
@@ -49,15 +76,18 @@ int main(void)
 	}
 	*/
 
+	fclose(tree);
+	fclose(arquivo);
+
 	return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 /*dados os endereços de duas instancias de registros, há a comparação dos
 respectivos campos chaves e o retorno da relação entre eles: >, < ou = */
-unsigned short comparaChave(void *pInfo1, void *pInfo2)
+unsigned short comparaChaves(void *pInfo1, void *pInfo2)
 {
-	tipoChave a1 = ((info *)pInfo1)->campoChave, a2 = ((info *)pInfo2)->campoChave;
+	int a1 = ((info *)pInfo1)->matricula, a2 = ((info *)pInfo2)->matricula;
 	if (a1 > a2)
 		return '>';
 	else
@@ -70,8 +100,7 @@ unsigned short comparaChave(void *pInfo1, void *pInfo2)
 ///////////////////////////////////////////////////////////
 void exibeChave(void *pInfo)
 {
-	static int i=0;
-	printf(" %u; ", ((info *)pInfo)->campoChave);
+	printf(" %u; ", ((info *)pInfo)->matricula);
 }
 
 //////////////////////////////////////////////////////////
@@ -86,6 +115,7 @@ void flush(FILE *in)
 
 
 /////////////////////////////////////////////////////////
+/*
 void menu(pABB p)
 {
 	unsigned int opc=1;
@@ -162,3 +192,4 @@ void menu(pABB p)
 
 	return;
 }
+*/
