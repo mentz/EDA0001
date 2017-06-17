@@ -41,14 +41,13 @@ int buscaABB(pABB pa, void *destino, void *chaveDeBusca, unsigned short(* cmp)(v
 	return ret;
 }
 
-
 int insereABB(pABB pa, void *novoReg, unsigned short (* cmp)(void *p1, void *p2))
 {  	pNoABB p, q, novoNoABB;
 
 		p = q = pa->raiz;
  	while( p != NULL )
 	  	{  if ( (*cmp)(novoReg,p->dados) == '=')
-			   	return FRACASSO;  /* registro j· inserido previamente */
+			   	return FRACASSO;  /* registro j√° inserido previamente */
 			else
 	 		{   	q = p;
 			p = ((*cmp)(novoReg,p->dados)== '<') ? p->esq : p->dir;
@@ -68,13 +67,13 @@ int insereABB(pABB pa, void *novoReg, unsigned short (* cmp)(void *p1, void *p2)
 				else
 			   				 q->dir=novoNoABB;
 					else
-						pa->raiz = novoNoABB;   /* ·rvore com um ˙nico nÛ */
+						pa->raiz = novoNoABB;   /* √°rvore com um √∫nico n√≥ */
 		   		return SUCESSO;
 			}
 			else
 					free(novoNoABB);
 	}
-	return FRACASSO;  /* n„o conseguiu alocar memÛria */
+	return FRACASSO;  /* n√£o conseguiu alocar mem√≥ria */
 }
 
 
@@ -88,25 +87,25 @@ int removeABB(pABB pa, void *chaveDeBusca, unsigned short (* cmp)(void *p1, void
   		alvo = (ch == '<' ? alvo->esq : alvo->dir);
 	}
 
-   	if (alvo==NULL)   /*alvo n„o encontrado */
+   	if (alvo==NULL)   /*alvo n√£o encontrado */
 		return FRACASSO;
 
 	if (alvo->esq == NULL)
-		if (alvo->dir == NULL) // alvo È uma folha
+		if (alvo->dir == NULL) // alvo √© uma folha
 			subst = NULL;
 		else
-			subst = alvo->dir; /*alvo possui apenas um filho ‡ dir*/
+			subst = alvo->dir; /*alvo possui apenas um filho √† dir*/
 
 	else
 		if(alvo->dir == NULL)
-			subst = alvo->esq; /*alvo possui apenas um filho ‡ esq*/
+			subst = alvo->esq; /*alvo possui apenas um filho √† esq*/
 
 		else  /* alvo possui os dois filhos*/
 		{		/* determinando o substituto pelo sucessor em ordem: */
 			paiSubst = alvo;
 			 	subst = alvo->dir;
 			 	//avante = alvo->esq; // ERRO!!
-			 	avante = subst->esq;   // CORRE«¬O!!
+			 	avante = subst->esq;   // CORRE√á√ÇO!!
 			 	while( avante != NULL)
 					{   paiSubst = subst;
 						subst = avante;
