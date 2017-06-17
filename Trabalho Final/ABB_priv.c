@@ -15,7 +15,6 @@ void apagaNoABB(pNoABB p)
 }
 
 
-
 void percorreEmOrdem(pNoABB p,  void (* processa)(void *p))
 {
 	if(p != NULL)
