@@ -4,9 +4,9 @@
 
 #define SIM 1
 #define NAO 0
-#define MAIOR
-#define MENOR
-#define IGUAL
+#define MAIOR '>'
+#define MENOR '<'
+#define IGUAL '='
 #define SUCESSO 1
 #define FRACASSO 0
 
