@@ -9998,3 +9998,4 @@
 2870 Lara 684125 6338.00 80 Direito #                      
 9322 Pedro 861781 6110.00 18 Letras #                      
 3577 Clara 790283 1884.00 22 Fisica #                      
+10001 Mentz 656564 120.00 19 Estudante #                   

@@ -5,7 +5,13 @@ int main(int argc, char * argv[])
 	pABB pT = NULL;
 	FILE * tree = NULL;
 	FILE * arquivo = NULL;
-	info * pInfo = malloc(sizeof(info));
+	info * pInfo = NULL;
+
+	if (!(pInfo = malloc(sizeof(info))))
+	{
+		puts("ERRO FATAL ao criar pInfo.");
+		return 1;
+	}
 
 	// Criação da ABB
 	if (criaABB(&pT, sizeof(info)) != SUCESSO)
@@ -31,11 +37,21 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
+		int r;
 		// Carregar a ABB lendo arquivo binário que contém os nodos da ABB da última execução.
 		rewind(tree);
-		memcpy(pInfo, tree, sizeof(info));
-		printf("%d -> %d\n", pInfo->matricula, pInfo->linha);
-	}	
+
+		while ((r = fread(pInfo, 1, sizeof(info), tree)) == sizeof(info))
+		{
+			printf("%d %d;", pInfo->linha, pInfo->matricula);
+			if (insereABB(pT, pInfo, comparaChaves) != SUCESSO)
+			{
+				printf("Houve um erro ao ler o arquivo \"abb_index.bin\" na linha %d.", pInfo->linha);
+				return 1;
+			}
+		}
+		fclose(tree);
+	}
 
 	int op = -1;
 	// MENU LINDÃO
@@ -45,7 +61,7 @@ int main(int argc, char * argv[])
 		puts("1 - Pesquisar por matrícula");
 		puts("2 - Adicionar um cadastro");
 		puts("3 - Remover um cadastro");
-		puts("0 - SAIR");
+		puts("0 - SAIR\n");
 		printf("Escolha uma opção: ");
 		
 		scanf("%d", &op);
@@ -127,9 +143,41 @@ int main(int argc, char * argv[])
 		}
 	}
 
-	// TODO: Fazer salvar quando fechar
+	int erro = NAO;
+	// Carregar a ABB lendo arquivo binário que contém os nodos da ABB da última execução.
+	if (!(tree = fopen("abb_index.bin", "wb")))
+	{
+		puts("Erro ao abrir \"abb_index.bin\".\nÍndice não foi salvo.");
+	}
+	else
+	{
+		rewind(arquivo);
+		int i = 0, r;
+		while (!feof(arquivo) && !erro)
+		{
+			fseek(arquivo, sizeof(char) * 60 * i, SEEK_SET);
+			r = fscanf(arquivo, "%d", &pInfo->matricula);
+			// Verificar se acabou de ler o final do arquivo e sair se for o caso.
+			if (r == EOF)
+				break;
+			if (buscaABB(pT, pInfo, pInfo, comparaChaves) != SUCESSO)
+			{
+				puts("Erro ao buscar na ABB. Índice não será salvo.");
+				erro = SIM;
+			}
+			else
+			{
+				fwrite(pInfo, 1, sizeof(info), tree);
+			}
+			i++;
+		}
+		fclose(tree);
+		if (erro)
+			remove("abb_index.bin");
+	}
 
-	//fclose(tree);
+
+	destroiABB(&pT);
 	fclose(arquivo);
 
 	return 0;
@@ -271,14 +319,14 @@ int removerMatricula(ppABB ppT, info * pInfo, FILE ** arquivo)
 	rename("tmp.dat", "arq.txt");
 	if (!(*arquivo = fopen("arq.txt", "r")))
 	{
-		puts("removerMatricula(ppABB ppT, info *pInfo, FILE **arquivo): Erro ao abrir arquivo resultado.");
+		puts("removerMatricula: Erro ao abrir arquivo resultado.");
 		return FRACASSO;
 	}
 
 	destroiABB(ppT);
 	if (criaABB(ppT, sizeof(info)) != SUCESSO)
 	{
-		puts("removerMatricula(ppABB ppT, info *pInfo, FILE **arquivo): Erro ao criar nova ABB.");
+		puts("removerMatricula: Erro ao criar nova ABB.");
 		return FRACASSO;
 	}
 	constroiArvoreIndices(*ppT, arquivo);
