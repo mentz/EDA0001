@@ -20,15 +20,17 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 
+	if (!(arquivo = fopen("arq.txt", "r")))
+	{
+		puts("Erro na leitura do arquivo \"arq.txt\".");
+		return 1;
+	}
+
 	if (!(tree = fopen("abb_index.bin", "rb")))
 	{
+		puts("Índice não encontrado em arquivo, criando dados.");
 		// Se abb_index.bin não existe, criar nova ABB usando a base de dados arq.txt
-		if (!(arquivo = fopen("arq.txt", "r")))
-		{
-			puts("Erro na leitura do arquivo \"arq.txt\".");
-			return 1;
-		}
-		// Carregar a ABB lendo o arquivo de matrículas, deve acontecer só na primeira execução e nas remoções.
+		// Carregar a ABB lendo o arquivo de matrículas, deve acontecer só na primeira execução e a cada remoção (porque sim).
 		if (constroiArvoreIndices(pT, &arquivo) != SUCESSO)
 		{
 			puts("Erro ao preencher a árvore.");
@@ -37,13 +39,13 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
+		puts("Índice encontrado em arquivo, recarregando dados.");
 		int r;
 		// Carregar a ABB lendo arquivo binário que contém os nodos da ABB da última execução.
 		rewind(tree);
 
 		while ((r = fread(pInfo, 1, sizeof(info), tree)) == sizeof(info))
 		{
-			printf("%d %d;", pInfo->linha, pInfo->matricula);
 			if (insereABB(pT, pInfo, comparaChaves) != SUCESSO)
 			{
 				printf("Houve um erro ao ler o arquivo \"abb_index.bin\" na linha %d.", pInfo->linha);
@@ -57,11 +59,12 @@ int main(int argc, char * argv[])
 	// MENU LINDÃO
 	while (op != 0)
 	{
-		puts("\n---------------------------");
-		puts("1 - Pesquisar por matrícula");
-		puts("2 - Adicionar um cadastro");
-		puts("3 - Remover um cadastro");
-		puts("0 - SAIR\n");
+		puts("|-----------------------------|");
+		puts("| 1 - Pesquisar por matrícula |");
+		puts("| 2 - Adicionar um cadastro   |");
+		puts("| 3 - Remover um cadastro     |");
+		puts("| 0 - SAIR                    |");
+		puts("|-----------------------------|");
 		printf("Escolha uma opção: ");
 		
 		scanf("%d", &op);
