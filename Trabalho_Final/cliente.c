@@ -59,13 +59,13 @@ int main(int argc, char * argv[])
 	// MENU LINDÃO
 	while (op != 0)
 	{
-		puts("-------------Menu-------------");
-		puts(" 1 - Pesquisar por matrícula");
-		puts(" 2 - Adicionar um cadastro");
-		puts(" 3 - Remover um cadastro");
-		puts(" 0 - SAIR");
-		puts("------------------------------");
-		printf(" Escolha uma opção: ");
+		puts("|-----------------------------|");
+		puts("| 1 - Pesquisar por matrícula |");
+		puts("| 2 - Adicionar um cadastro   |");
+		puts("| 3 - Remover um cadastro     |");
+		puts("| 0 - SAIR                    |");
+		puts("|-----------------------------|");
+		printf("Escolha uma opção: ");
 		
 		scanf("%d", &op);
 		printf("\n");
