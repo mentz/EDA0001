@@ -5,11 +5,8 @@ p->topo->dados = r; // essa linha funciona do mesmo modo que a anterior
 
 // 1.ii:
 p->topo = q;
-p->topo->dados = r; // ou:  q->dados = r;
-p->topo->abaixo = p->topo; // ou:  q->abaixo = q;
+p->topo->dados = r;
+p->topo->abaixo = p->topo;
 
 // 2:
-q->dir = p;
-q->esq = p->esq;
-q->esq->dir = q;
-p->esq = q;
+PAREI ISSO É CHAATO

@@ -18,5 +18,6 @@ typedef struct
 unsigned short comparaChaves(void *pInfo1, void *pInfo2);
 void exibeChave(void *pInfo);
 void flush(FILE *in);
+int inserirMatricula(pABB pT, info * pInfo, FILE ** arquivo);
 int constroiArvoreIndices(pABB pT, FILE ** arquivo);
 int removerMatricula(ppABB ppT, info * pInfo, FILE ** arquivo);

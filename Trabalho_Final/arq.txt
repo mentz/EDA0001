@@ -9995,6 +9995,9 @@
 4456 Zeca 891618 4864.00 19 Odontologia #                  
 9724 Maria 383930 3280.00 79 Engenharia #                  
 6209 Lara 490837 6444.00 77 Medicina #                     
-2870 Lara 684125 6338.00 80 Direito #                      
 9322 Pedro 861781 6110.00 18 Letras #                      
 3577 Clara 790283 1884.00 22 Fisica #                      
+2870 Lara 684125 6338.00 80 Direito #                      
+10001 Leonardo 246789 15.00 18 Computacao #                
+10002 Felipe 243524 400.00 19 Computacao #                 
+10003 Lucas 534835 1600.00 19 Computacao #                 

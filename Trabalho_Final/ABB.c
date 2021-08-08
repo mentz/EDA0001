@@ -32,7 +32,7 @@ int buscaABB(pABB pa, void *destino, void *chaveDeBusca, unsigned short(* cmp)(v
 	int ret = FRACASSO;
 	aux = pa->raiz;
 	while (aux != NULL && (*cmp)(chaveDeBusca, aux->dados) != '=')
-		aux = (*cmp)(chaveDeBusca, aux->dados)== '<' ? aux->esq : aux->dir;
+		aux = (*cmp)(chaveDeBusca, aux->dados) == '<' ? aux->esq : aux->dir;
 	if (aux != NULL)
 	{
 		memcpy(destino, aux->dados, pa->tamInfo);

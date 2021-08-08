@@ -5,7 +5,13 @@ int main(int argc, char * argv[])
 	pABB pT = NULL;
 	FILE * tree = NULL;
 	FILE * arquivo = NULL;
-	info * pInfo = malloc(sizeof(info));
+	info * pInfo = NULL;
+
+	if (!(pInfo = malloc(sizeof(info))))
+	{
+		puts("ERRO FATAL ao criar pInfo.");
+		return 1;
+	}
 
 	// Criação da ABB
 	if (criaABB(&pT, sizeof(info)) != SUCESSO)
@@ -14,15 +20,17 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 
+	if (!(arquivo = fopen("arq.txt", "r")))
+	{
+		puts("Erro na leitura do arquivo \"arq.txt\".");
+		return 1;
+	}
+
 	if (!(tree = fopen("abb_index.bin", "rb")))
 	{
+		puts("Índice não encontrado em arquivo, criando dados.");
 		// Se abb_index.bin não existe, criar nova ABB usando a base de dados arq.txt
-		if (!(arquivo = fopen("arq.txt", "r")))
-		{
-			puts("Erro na leitura do arquivo \"arq.txt\".");
-			return 1;
-		}
-		// Carregar a ABB lendo o arquivo de matrículas, deve acontecer só na primeira execução e nas remoções.
+		// Carregar a ABB lendo o arquivo de matrículas, deve acontecer só na primeira execução e a cada remoção (porque sim).
 		if (constroiArvoreIndices(pT, &arquivo) != SUCESSO)
 		{
 			puts("Erro ao preencher a árvore.");
@@ -31,26 +39,38 @@ int main(int argc, char * argv[])
 	}
 	else
 	{
+		puts("Índice encontrado em arquivo, recarregando dados.");
+		int r;
 		// Carregar a ABB lendo arquivo binário que contém os nodos da ABB da última execução.
 		rewind(tree);
-		memcpy(pInfo, tree, sizeof(info));
-		printf("%d -> %d\n", pInfo->matricula, pInfo->linha);
-	}	
+
+		while ((r = fread(pInfo, 1, sizeof(info), tree)) == sizeof(info))
+		{
+			if (insereABB(pT, pInfo, comparaChaves) != SUCESSO)
+			{
+				printf("Houve um erro ao ler o arquivo \"abb_index.bin\" na linha %d.", pInfo->linha);
+				return 1;
+			}
+		}
+		fclose(tree);
+	}
 
 	int op = -1;
 	// MENU LINDÃO
 	while (op != 0)
 	{
-		puts("\n---------------------------");
-		puts("1 - Pesquisar por matrícula");
-		puts("2 - Adicionar um cadastro");
-		puts("3 - Remover um cadastro");
-		puts("0 - SAIR");
-		printf("Escolha uma opção: ");
+		puts("-------------Menu-------------");
+		puts(" 1 - Pesquisar por matrícula");
+		puts(" 2 - Adicionar um cadastro");
+		puts(" 3 - Remover um cadastro");
+		puts(" 0 - SAIR");
+		puts("------------------------------");
+		printf(" Escolha uma opção: ");
 		
 		scanf("%d", &op);
+		printf("\n");
 		int i = 1, confirmacao = 0;
-		char linha[60];
+		char linha[60], ch;
 		switch (op)
 		{
 			case 1:
@@ -59,7 +79,11 @@ int main(int argc, char * argv[])
 				if (!buscaABB(pT, pInfo, pInfo, comparaChaves))
 					puts("Matrícula não encontrada.");
 				else
-					printf("Matrícula se encontra na linha %d\n", pInfo->linha + 1);
+				{
+					fseek(arquivo, sizeof(char) * 60 * pInfo->linha, SEEK_SET);
+					fscanf(arquivo, "%59[^\n]", linha);
+					printf("Cadastro na linha %d:\n%s\n", pInfo->linha+1, linha);
+				}
 				break;
 
 			case 2:
@@ -67,9 +91,17 @@ int main(int argc, char * argv[])
 				do {
 					pInfo->matricula = i++;
 				} while (buscaABB(pT, pInfo, pInfo, comparaChaves) == SUCESSO);
-				fseek(arquivo, sizeof(char) * 60, SEEK_END);
+				rewind(arquivo);
+				i = 0;
+				// Contagem de linhas para saber onde adicionar o último registro.
+				while (!feof(arquivo))
+				{
+					ch = getc(arquivo);
+					if (ch == '\n')
+						i++;
+				}
 				fscanf(arquivo, "%d", &i);
-				printf("%d última matricula\n", i);
+				pInfo->linha = i;
 				printf("Nova matrícula: %d\n", pInfo->matricula);
 				if (inserirMatricula(pT, pInfo, &arquivo) != SUCESSO)
 				{
@@ -114,9 +146,41 @@ int main(int argc, char * argv[])
 		}
 	}
 
-	// TODO: Fazer salvar quando fechar
+	int erro = NAO;
+	// Carregar a ABB lendo arquivo binário que contém os nodos da ABB da última execução.
+	if (!(tree = fopen("abb_index.bin", "wb")))
+	{
+		puts("Erro ao abrir \"abb_index.bin\".\nÍndice não foi salvo.");
+	}
+	else
+	{
+		rewind(arquivo);
+		int i = 0, r;
+		while (!feof(arquivo) && !erro)
+		{
+			fseek(arquivo, sizeof(char) * 60 * i, SEEK_SET);
+			r = fscanf(arquivo, "%d", &pInfo->matricula);
+			// Verificar se acabou de ler o final do arquivo e sair se for o caso.
+			if (r == EOF)
+				break;
+			if (buscaABB(pT, pInfo, pInfo, comparaChaves) != SUCESSO)
+			{
+				puts("Erro ao buscar na ABB. Índice não será salvo.");
+				erro = SIM;
+			}
+			else
+			{
+				fwrite(pInfo, 1, sizeof(info), tree);
+			}
+			i++;
+		}
+		fclose(tree);
+		if (erro)
+			remove("abb_index.bin");
+	}
 
-	//fclose(tree);
+
+	destroiABB(&pT);
 	fclose(arquivo);
 
 	return 0;
@@ -153,8 +217,11 @@ void flush(FILE *in)
 	} while(c != '\n' && c != EOF);
 }
 
+/////////////////////////////////////////////////////////
 int inserirMatricula(pABB pT, info * pInfo, FILE ** arquivo)
 {
+
+	// Reabrir arquivo no modo append.
 	fclose(*arquivo);
 	if (!(*arquivo = fopen("arq.txt", "a")))
 	{
@@ -162,10 +229,32 @@ int inserirMatricula(pABB pT, info * pInfo, FILE ** arquivo)
 		return FRACASSO;
 	}
 
-	int matricula = pInfo->matricula;
+	int matricula = pInfo->matricula, telefone, idade;
+	char nome[15], departamento[15];
+	double salario;
 
-	printf("Digite o nome: ");
+	printf("Digite o nome (até 15 caracteres sem espaços): "); scanf("%15s", nome);
+	printf("Digite o telefone (6 dígitos): "); scanf("%d", &telefone);
+	printf("Digite o salário: "); scanf("%lf", &salario);
+	printf("Digite a idade (entre 10 e 100 anos, inclusive): "); scanf("%d", &idade);
+	printf("Digite o departamento (até 15 caracteres sem espaços): "); scanf("%15s", departamento);
 
+	char cadastro[61];
+	sprintf(cadastro, "%d %s %d %0.2f %d %s #", matricula, nome, telefone, salario, idade, departamento);
+	printf("\nCadastro inserido:\n%-59s\n", cadastro);
+	fseek(*arquivo, sizeof(char) * 60 * pInfo->linha, SEEK_SET);
+	fprintf(*arquivo, "%-59s\n", cadastro);
+
+	// Insere na ABB índice.
+	insereABB(pT, pInfo, comparaChaves);
+
+	// Devolver o ponteiro de arquivo da forma que foi recebido.
+	fclose(*arquivo);
+	if (!(*arquivo = fopen("arq.txt", "r")))
+	{
+		puts("inserirMatricula: Erro ao reabrir \"arq.txt\" em modo leitura.");
+		return FRACASSO;
+	}
 
 	return SUCESSO;
 }
@@ -175,20 +264,22 @@ int constroiArvoreIndices(pABB pT, FILE ** arquivo)
 {
 	info * pInfo = malloc(sizeof(info));
 	rewind(*arquivo);
-	int i = 0;
-	while (1)
+	int i = 0, r;
+	while (!feof(*arquivo)) 
 	{
 		pInfo->linha = i;
 		fseek(*arquivo, sizeof(char) * 60 * i, SEEK_SET);
-		if (fscanf(*arquivo, "%d", &pInfo->matricula) == EOF)
+		r = fscanf(*arquivo, "%d", &pInfo->matricula);
+		// Verificar se acabo de ler o final do arquivo e sair se for o caso.
+		if (r == EOF)
 			break;
 		if (insereABB(pT, pInfo, comparaChaves) != SUCESSO)
 		{
-			puts("constroiArvoreIndices(pABB pT, FILE ** arquivo): Erro ao inserir na ABB.");
+			puts("constroiArvoreIndices: Erro ao inserir na ABB.");
 			return FRACASSO;
 		}
 		i++;
-	}
+	} 
 
 	return SUCESSO;
 }
@@ -200,7 +291,7 @@ int removerMatricula(ppABB ppT, info * pInfo, FILE ** arquivo)
 	FILE * tmp = NULL;
 	if (!(tmp = fopen("tmp.dat", "w")))
 	{
-		puts("removerMatricula(info *pInfo, FILE **arquivo): Erro ao criar arquivo auxiliar.");
+		puts("removerMatricula: Erro ao criar arquivo auxiliar.");
 		return FRACASSO;
 	}
 
@@ -231,14 +322,14 @@ int removerMatricula(ppABB ppT, info * pInfo, FILE ** arquivo)
 	rename("tmp.dat", "arq.txt");
 	if (!(*arquivo = fopen("arq.txt", "r")))
 	{
-		puts("removerMatricula(ppABB ppT, info *pInfo, FILE **arquivo): Erro ao abrir arquivo resultado.");
+		puts("removerMatricula: Erro ao abrir arquivo resultado.");
 		return FRACASSO;
 	}
 
 	destroiABB(ppT);
 	if (criaABB(ppT, sizeof(info)) != SUCESSO)
 	{
-		puts("removerMatricula(ppABB ppT, info *pInfo, FILE **arquivo): Erro ao criar nova ABB.");
+		puts("removerMatricula: Erro ao criar nova ABB.");
 		return FRACASSO;
 	}
 	constroiArvoreIndices(*ppT, arquivo);
